@@ -1,0 +1,101 @@
+╷
+├─ JUnit Platform Suite ✔
+├─ JUnit Jupiter ✔
+│  ├─ Item model validation ✔
+│  │  ├─ valid item stores all fields (trimmed) ✔
+│  │  ├─ setQuantity rejects negative values ✔
+│  │  ├─ constructor_blankId_throws(String) ✔
+│  │  │  ├─ blank id [null] is rejected ✔
+│  │  │  ├─ blank id [] is rejected ✔
+│  │  │  ├─ blank id [ ] is rejected ✔
+│  │  │  └─ blank id [ ] is rejected ✔
+│  │  ├─ negative quantity is rejected ✔
+│  │  ├─ setName rejects blank values ✔
+│  │  ├─ zero quantity and zero price are allowed (boundary) ✔
+│  │  ├─ constructor_blankName_throws(String) ✔
+│  │  │  ├─ blank name [null] is rejected ✔
+│  │  │  ├─ blank name [] is rejected ✔
+│  │  │  └─ blank name [ ] is rejected ✔
+│  │  └─ negative price is rejected ✔
+│  └─ InventoryManager ✔
+│     ├─ full lifecycle: add -> read -> update -> adjust -> search -> delete ✔
+│     ├─ Reports (getLowStockItems / getTotalValue) ✔
+│     │  ├─ negative threshold is rejected ✔
+│     │  ├─ total value keeps the cents ✔
+│     │  ├─ threshold of zero returns nothing ✔
+│     │  ├─ total value of an empty inventory is zero ✔
+│     │  ├─ total value reflects removals ✔
+│     │  └─ low stock uses strictly-less-than the threshold ✔
+│     ├─ Search (searchByName) ✔
+│     │  ├─ searchByName_variousTerms_caseInsensitivePartialMatch(String, int) ✔
+│     │  │  ├─ term [Mouse] finds 2 item(s) ✔
+│     │  │  ├─ term [mouse] finds 2 item(s) ✔
+│     │  │  ├─ term [MOUSE] finds 2 item(s) ✔
+│     │  │  ├─ term [pad] finds 1 item(s) ✔
+│     │  │  ├─ term [top] finds 1 item(s) ✔
+│     │  │  └─ term [zzz] finds 0 item(s) ✔
+│     │  └─ searchByName_blankOrNull_returnsEmpty(String) ✔
+│     │     ├─ blank term [null] returns empty list ✔
+│     │     ├─ blank term [] returns empty list ✔
+│     │     └─ blank term [   ] returns empty list ✔
+│     ├─ Delete (removeItem) ✔
+│     │  ├─ an ID can be re-used after removal ✔
+│     │  ├─ removing the same item twice fails the second time ✔
+│     │  ├─ unknown ID throws ItemNotFoundException ✔
+│     │  └─ removes an existing item ✔
+│     ├─ Update (updateItem / adjustQuantity) ✔
+│     │  ├─ updateItem changes name, quantity and price ✔
+│     │  ├─ removing more stock than available throws and keeps quantity ✔
+│     │  ├─ adjustQuantity on unknown ID throws ItemNotFoundException ✔
+│     │  ├─ updateItem on unknown ID throws ItemNotFoundException ✔
+│     │  ├─ adjustQuantity_validDeltas_updatesQuantity(int, int) ✔
+│     │  │  ├─ adjust by 5 -> quantity 15 ✔
+│     │  │  ├─ adjust by -4 -> quantity 6 ✔
+│     │  │  ├─ adjust by 0 -> quantity 10 ✔
+│     │  │  └─ adjust by -10 -> quantity 0 ✔
+│     │  └─ updateItem with invalid data leaves the item unchanged ✘ name must not be half-updated ==> expected: <Laptop> but was: <Renamed>
+│     ├─ Read (getItem / getAllItems) ✔
+│     │  ├─ returns the stored item ✔
+│     │  ├─ empty inventory returns an empty list ✔
+│     │  ├─ unknown ID throws ItemNotFoundException ✔
+│     │  ├─ getItem_blankOrNullId_throws(String) ✔
+│     │  │  ├─ invalid id [null] throws IllegalArgumentException ✔
+│     │  │  ├─ invalid id [] throws IllegalArgumentException ✔
+│     │  │  └─ invalid id [  ] throws IllegalArgumentException ✔
+│     │  └─ returned list is a defensive copy ✔
+│     └─ Create (addItem) ✔
+│        ├─ duplicate ID is rejected and original is preserved ✔
+│        ├─ adds an item and increases size ✔
+│        ├─ null item is rejected ✔
+│        └─ adds several items and keeps insertion order ✔
+└─ JUnit Vintage ✔
+
+Failures (1):
+  JUnit Jupiter:InventoryManager:Update (updateItem / adjustQuantity):updateItem with invalid data leaves the item unchanged
+    MethodSource [className = 'com.inventory.InventoryManagerTest$Update', methodName = 'updateItem_invalidData_leavesItemUnchanged', methodParameterTypes = '']
+    => org.opentest4j.AssertionFailedError: name must not be half-updated ==> expected: <Laptop> but was: <Renamed>
+       org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
+       org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
+       org.junit.jupiter.api.AssertEquals.failNotEqual(AssertEquals.java:197)
+       org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:182)
+       org.junit.jupiter.api.Assertions.assertEquals(Assertions.java:1156)
+       com.inventory.InventoryManagerTest$Update.updateItem_invalidData_leavesItemUnchanged(InventoryManagerTest.java:144)
+       java.base/java.lang.reflect.Method.invoke(Method.java:580)
+       java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+       java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+       java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+
+Test run finished after 360 ms
+[        17 containers found      ]
+[         0 containers skipped    ]
+[        17 containers started    ]
+[         0 containers aborted    ]
+[        17 containers successful ]
+[         0 containers failed     ]
+[        53 tests found           ]
+[         0 tests skipped         ]
+[        53 tests started         ]
+[         0 tests aborted         ]
+[        52 tests successful      ]
+[         1 tests failed          ]
+

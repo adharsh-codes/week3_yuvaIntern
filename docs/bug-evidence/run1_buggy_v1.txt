@@ -1,0 +1,361 @@
+╷
+├─ JUnit Platform Suite ✔
+├─ JUnit Jupiter ✔
+│  ├─ Item model validation ✔
+│  │  ├─ valid item stores all fields (trimmed) ✔
+│  │  ├─ setQuantity rejects negative values ✘ Expected java.lang.IllegalArgumentException to be thrown, but nothing was thrown.
+│  │  ├─ constructor_blankId_throws(String) ✔
+│  │  │  ├─ blank id [null] is rejected ✔
+│  │  │  ├─ blank id [] is rejected ✔
+│  │  │  ├─ blank id [ ] is rejected ✔
+│  │  │  └─ blank id [ ] is rejected ✔
+│  │  ├─ negative quantity is rejected ✘ Expected java.lang.IllegalArgumentException to be thrown, but nothing was thrown.
+│  │  ├─ setName rejects blank values ✔
+│  │  ├─ zero quantity and zero price are allowed (boundary) ✔
+│  │  ├─ constructor_blankName_throws(String) ✔
+│  │  │  ├─ blank name [null] is rejected ✔
+│  │  │  ├─ blank name [] is rejected ✔
+│  │  │  └─ blank name [ ] is rejected ✔
+│  │  └─ negative price is rejected ✔
+│  └─ InventoryManager ✔
+│     ├─ full lifecycle: add -> read -> update -> adjust -> search -> delete ✘ expected: <1> but was: <0>
+│     ├─ Reports (getLowStockItems / getTotalValue) ✔
+│     │  ├─ negative threshold is rejected ✔
+│     │  ├─ total value keeps the cents ✘ expected: <11969.9> but was: <11935.0>
+│     │  ├─ threshold of zero returns nothing ✔
+│     │  ├─ total value of an empty inventory is zero ✔
+│     │  ├─ total value reflects removals ✘ expected: <1970.0> but was: <1945.0>
+│     │  └─ low stock uses strictly-less-than the threshold ✘ expected: <true> but was: <false>
+│     ├─ Search (searchByName) ✔
+│     │  ├─ searchByName_variousTerms_caseInsensitivePartialMatch(String, int) ✔
+│     │  │  ├─ term [Mouse] finds 2 item(s) ✔
+│     │  │  ├─ term [mouse] finds 2 item(s) ✘ expected: <2> but was: <0>
+│     │  │  ├─ term [MOUSE] finds 2 item(s) ✘ expected: <2> but was: <0>
+│     │  │  ├─ term [pad] finds 1 item(s) ✘ expected: <1> but was: <0>
+│     │  │  ├─ term [top] finds 1 item(s) ✔
+│     │  │  └─ term [zzz] finds 0 item(s) ✔
+│     │  └─ searchByName_blankOrNull_returnsEmpty(String) ✔
+│     │     ├─ blank term [null] returns empty list ✔
+│     │     ├─ blank term [] returns empty list ✔
+│     │     └─ blank term [   ] returns empty list ✔
+│     ├─ Delete (removeItem) ✔
+│     │  ├─ an ID can be re-used after removal ✔
+│     │  ├─ removing the same item twice fails the second time ✘ Expected com.inventory.ItemNotFoundException to be thrown, but nothing was thrown.
+│     │  ├─ unknown ID throws ItemNotFoundException ✘ Expected com.inventory.ItemNotFoundException to be thrown, but nothing was thrown.
+│     │  └─ removes an existing item ✘ Expected com.inventory.ItemNotFoundException to be thrown, but nothing was thrown.
+│     ├─ Update (updateItem / adjustQuantity) ✔
+│     │  ├─ updateItem changes name, quantity and price ✔
+│     │  ├─ removing more stock than available throws and keeps quantity ✘ Expected com.inventory.InsufficientStockException to be thrown, but nothing was thrown.
+│     │  ├─ adjustQuantity on unknown ID throws ItemNotFoundException ✘ Unexpected exception type thrown, expected: <com.inventory.ItemNotFoundException> but was: <java.lang.NullPointerException>
+│     │  ├─ updateItem on unknown ID throws ItemNotFoundException ✘ Unexpected exception type thrown, expected: <com.inventory.ItemNotFoundException> but was: <java.lang.NullPointerException>
+│     │  ├─ adjustQuantity_validDeltas_updatesQuantity(int, int) ✔
+│     │  │  ├─ adjust by 5 -> quantity 15 ✔
+│     │  │  ├─ adjust by -4 -> quantity 6 ✔
+│     │  │  ├─ adjust by 0 -> quantity 10 ✔
+│     │  │  └─ adjust by -10 -> quantity 0 ✔
+│     │  └─ updateItem with invalid data leaves the item unchanged ✘ Expected java.lang.IllegalArgumentException to be thrown, but nothing was thrown.
+│     ├─ Read (getItem / getAllItems) ✔
+│     │  ├─ returns the stored item ✔
+│     │  ├─ empty inventory returns an empty list ✔
+│     │  ├─ unknown ID throws ItemNotFoundException ✘ Expected com.inventory.ItemNotFoundException to be thrown, but nothing was thrown.
+│     │  ├─ getItem_blankOrNullId_throws(String) ✔
+│     │  │  ├─ invalid id [null] throws IllegalArgumentException ✘ Expected java.lang.IllegalArgumentException to be thrown, but nothing was thrown.
+│     │  │  ├─ invalid id [] throws IllegalArgumentException ✘ Expected java.lang.IllegalArgumentException to be thrown, but nothing was thrown.
+│     │  │  └─ invalid id [  ] throws IllegalArgumentException ✘ Expected java.lang.IllegalArgumentException to be thrown, but nothing was thrown.
+│     │  └─ returned list is a defensive copy ✔
+│     └─ Create (addItem) ✔
+│        ├─ duplicate ID is rejected and original is preserved ✘ Expected com.inventory.DuplicateItemException to be thrown, but nothing was thrown.
+│        ├─ adds an item and increases size ✔
+│        ├─ null item is rejected ✔
+│        └─ adds several items and keeps insertion order ✔
+└─ JUnit Vintage ✔
+
+Failures (21):
+  JUnit Jupiter:Item model validation:setQuantity rejects negative values
+    MethodSource [className = 'com.inventory.ItemTest', methodName = 'setQuantity_negative_throws', methodParameterTypes = '']
+    => org.opentest4j.AssertionFailedError: Expected java.lang.IllegalArgumentException to be thrown, but nothing was thrown.
+       org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:152)
+       org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:73)
+       org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:35)
+       org.junit.jupiter.api.Assertions.assertThrows(Assertions.java:3115)
+       com.inventory.ItemTest.setQuantity_negative_throws(ItemTest.java:61)
+       java.base/java.lang.reflect.Method.invoke(Method.java:580)
+       java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+       java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+  JUnit Jupiter:Item model validation:negative quantity is rejected
+    MethodSource [className = 'com.inventory.ItemTest', methodName = 'constructor_negativeQuantity_throws', methodParameterTypes = '']
+    => org.opentest4j.AssertionFailedError: Expected java.lang.IllegalArgumentException to be thrown, but nothing was thrown.
+       org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:152)
+       org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:73)
+       org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:35)
+       org.junit.jupiter.api.Assertions.assertThrows(Assertions.java:3115)
+       com.inventory.ItemTest.constructor_negativeQuantity_throws(ItemTest.java:42)
+       java.base/java.lang.reflect.Method.invoke(Method.java:580)
+       java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+       java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+  JUnit Jupiter:InventoryManager:full lifecycle: add -> read -> update -> adjust -> search -> delete
+    MethodSource [className = 'com.inventory.InventoryManagerTest', methodName = 'fullLifecycle_endToEnd', methodParameterTypes = '']
+    => org.opentest4j.AssertionFailedError: expected: <1> but was: <0>
+       org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
+       org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
+       org.junit.jupiter.api.AssertEquals.failNotEqual(AssertEquals.java:197)
+       org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:150)
+       org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:145)
+       org.junit.jupiter.api.Assertions.assertEquals(Assertions.java:531)
+       com.inventory.InventoryManagerTest.fullLifecycle_endToEnd(InventoryManagerTest.java:300)
+       java.base/java.lang.reflect.Method.invoke(Method.java:580)
+       java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+       java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+  JUnit Jupiter:InventoryManager:Reports (getLowStockItems / getTotalValue):total value keeps the cents
+    MethodSource [className = 'com.inventory.InventoryManagerTest$Reports', methodName = 'getTotalValue_includesCents', methodParameterTypes = '']
+    => org.opentest4j.AssertionFailedError: expected: <11969.9> but was: <11935.0>
+       org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
+       org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
+       org.junit.jupiter.api.AssertEquals.failNotEqual(AssertEquals.java:197)
+       org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:86)
+       org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:81)
+       org.junit.jupiter.api.Assertions.assertEquals(Assertions.java:1014)
+       com.inventory.InventoryManagerTest$Reports.getTotalValue_includesCents(InventoryManagerTest.java:273)
+       java.base/java.lang.reflect.Method.invoke(Method.java:580)
+       java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+       java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+       [...]
+  JUnit Jupiter:InventoryManager:Reports (getLowStockItems / getTotalValue):total value reflects removals
+    MethodSource [className = 'com.inventory.InventoryManagerTest$Reports', methodName = 'getTotalValue_afterRemoval_decreases', methodParameterTypes = '']
+    => org.opentest4j.AssertionFailedError: expected: <1970.0> but was: <1945.0>
+       org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
+       org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
+       org.junit.jupiter.api.AssertEquals.failNotEqual(AssertEquals.java:197)
+       org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:86)
+       org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:81)
+       org.junit.jupiter.api.Assertions.assertEquals(Assertions.java:1014)
+       com.inventory.InventoryManagerTest$Reports.getTotalValue_afterRemoval_decreases(InventoryManagerTest.java:286)
+       java.base/java.lang.reflect.Method.invoke(Method.java:580)
+       java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+       java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+       [...]
+  JUnit Jupiter:InventoryManager:Reports (getLowStockItems / getTotalValue):low stock uses strictly-less-than the threshold
+    MethodSource [className = 'com.inventory.InventoryManagerTest$Reports', methodName = 'getLowStockItems_boundary_isStrictlyLessThan', methodParameterTypes = '']
+    => org.opentest4j.AssertionFailedError: expected: <true> but was: <false>
+       org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
+       org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
+       org.junit.jupiter.api.AssertTrue.failNotTrue(AssertTrue.java:63)
+       org.junit.jupiter.api.AssertTrue.assertTrue(AssertTrue.java:36)
+       org.junit.jupiter.api.AssertTrue.assertTrue(AssertTrue.java:31)
+       org.junit.jupiter.api.Assertions.assertTrue(Assertions.java:183)
+       com.inventory.InventoryManagerTest$Reports.getLowStockItems_boundary_isStrictlyLessThan(InventoryManagerTest.java:251)
+       java.base/java.lang.reflect.Method.invoke(Method.java:580)
+       java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+       java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+       [...]
+  JUnit Jupiter:InventoryManager:Search (searchByName):searchByName_variousTerms_caseInsensitivePartialMatch(String, int):term [mouse] finds 2 item(s)
+    MethodSource [className = 'com.inventory.InventoryManagerTest$Search', methodName = 'searchByName_variousTerms_caseInsensitivePartialMatch', methodParameterTypes = 'java.lang.String, int']
+    => org.opentest4j.AssertionFailedError: expected: <2> but was: <0>
+       org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
+       org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
+       org.junit.jupiter.api.AssertEquals.failNotEqual(AssertEquals.java:197)
+       org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:150)
+       org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:145)
+       org.junit.jupiter.api.Assertions.assertEquals(Assertions.java:531)
+       com.inventory.InventoryManagerTest$Search.searchByName_variousTerms_caseInsensitivePartialMatch(InventoryManagerTest.java:224)
+       java.base/java.lang.reflect.Method.invoke(Method.java:580)
+       java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.accept(ForEachOps.java:184)
+       java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
+       [...]
+  JUnit Jupiter:InventoryManager:Search (searchByName):searchByName_variousTerms_caseInsensitivePartialMatch(String, int):term [MOUSE] finds 2 item(s)
+    MethodSource [className = 'com.inventory.InventoryManagerTest$Search', methodName = 'searchByName_variousTerms_caseInsensitivePartialMatch', methodParameterTypes = 'java.lang.String, int']
+    => org.opentest4j.AssertionFailedError: expected: <2> but was: <0>
+       org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
+       org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
+       org.junit.jupiter.api.AssertEquals.failNotEqual(AssertEquals.java:197)
+       org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:150)
+       org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:145)
+       org.junit.jupiter.api.Assertions.assertEquals(Assertions.java:531)
+       com.inventory.InventoryManagerTest$Search.searchByName_variousTerms_caseInsensitivePartialMatch(InventoryManagerTest.java:224)
+       java.base/java.lang.reflect.Method.invoke(Method.java:580)
+       java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.accept(ForEachOps.java:184)
+       java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
+       [...]
+  JUnit Jupiter:InventoryManager:Search (searchByName):searchByName_variousTerms_caseInsensitivePartialMatch(String, int):term [pad] finds 1 item(s)
+    MethodSource [className = 'com.inventory.InventoryManagerTest$Search', methodName = 'searchByName_variousTerms_caseInsensitivePartialMatch', methodParameterTypes = 'java.lang.String, int']
+    => org.opentest4j.AssertionFailedError: expected: <1> but was: <0>
+       org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
+       org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
+       org.junit.jupiter.api.AssertEquals.failNotEqual(AssertEquals.java:197)
+       org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:150)
+       org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:145)
+       org.junit.jupiter.api.Assertions.assertEquals(Assertions.java:531)
+       com.inventory.InventoryManagerTest$Search.searchByName_variousTerms_caseInsensitivePartialMatch(InventoryManagerTest.java:224)
+       java.base/java.lang.reflect.Method.invoke(Method.java:580)
+       java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.accept(ForEachOps.java:184)
+       java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
+       [...]
+  JUnit Jupiter:InventoryManager:Delete (removeItem):removing the same item twice fails the second time
+    MethodSource [className = 'com.inventory.InventoryManagerTest$Delete', methodName = 'removeItem_twice_secondCallThrows', methodParameterTypes = '']
+    => org.opentest4j.AssertionFailedError: Expected com.inventory.ItemNotFoundException to be thrown, but nothing was thrown.
+       org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:152)
+       org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:73)
+       org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:35)
+       org.junit.jupiter.api.Assertions.assertThrows(Assertions.java:3115)
+       com.inventory.InventoryManagerTest$Delete.removeItem_twice_secondCallThrows(InventoryManagerTest.java:196)
+       java.base/java.lang.reflect.Method.invoke(Method.java:580)
+       java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+       java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+       java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+  JUnit Jupiter:InventoryManager:Delete (removeItem):unknown ID throws ItemNotFoundException
+    MethodSource [className = 'com.inventory.InventoryManagerTest$Delete', methodName = 'removeItem_unknown_throws', methodParameterTypes = '']
+    => org.opentest4j.AssertionFailedError: Expected com.inventory.ItemNotFoundException to be thrown, but nothing was thrown.
+       org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:152)
+       org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:73)
+       org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:35)
+       org.junit.jupiter.api.Assertions.assertThrows(Assertions.java:3115)
+       com.inventory.InventoryManagerTest$Delete.removeItem_unknown_throws(InventoryManagerTest.java:188)
+       java.base/java.lang.reflect.Method.invoke(Method.java:580)
+       java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+       java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+       java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+  JUnit Jupiter:InventoryManager:Delete (removeItem):removes an existing item
+    MethodSource [className = 'com.inventory.InventoryManagerTest$Delete', methodName = 'removeItem_existing_isRemoved', methodParameterTypes = '']
+    => org.opentest4j.AssertionFailedError: Expected com.inventory.ItemNotFoundException to be thrown, but nothing was thrown.
+       org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:152)
+       org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:73)
+       org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:35)
+       org.junit.jupiter.api.Assertions.assertThrows(Assertions.java:3115)
+       com.inventory.InventoryManagerTest$Delete.removeItem_existing_isRemoved(InventoryManagerTest.java:182)
+       java.base/java.lang.reflect.Method.invoke(Method.java:580)
+       java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+       java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+       java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+  JUnit Jupiter:InventoryManager:Update (updateItem / adjustQuantity):removing more stock than available throws and keeps quantity
+    MethodSource [className = 'com.inventory.InventoryManagerTest$Update', methodName = 'adjustQuantity_belowZero_throwsInsufficientStock', methodParameterTypes = '']
+    => org.opentest4j.AssertionFailedError: Expected com.inventory.InsufficientStockException to be thrown, but nothing was thrown.
+       org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:152)
+       org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:73)
+       org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:35)
+       org.junit.jupiter.api.Assertions.assertThrows(Assertions.java:3115)
+       com.inventory.InventoryManagerTest$Update.adjustQuantity_belowZero_throwsInsufficientStock(InventoryManagerTest.java:159)
+       java.base/java.lang.reflect.Method.invoke(Method.java:580)
+       java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+       java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+       java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+  JUnit Jupiter:InventoryManager:Update (updateItem / adjustQuantity):adjustQuantity on unknown ID throws ItemNotFoundException
+    MethodSource [className = 'com.inventory.InventoryManagerTest$Update', methodName = 'adjustQuantity_unknownId_throws', methodParameterTypes = '']
+    => org.opentest4j.AssertionFailedError: Unexpected exception type thrown, expected: <com.inventory.ItemNotFoundException> but was: <java.lang.NullPointerException>
+       org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
+       org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:67)
+       org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:35)
+       org.junit.jupiter.api.Assertions.assertThrows(Assertions.java:3115)
+       com.inventory.InventoryManagerTest$Update.adjustQuantity_unknownId_throws(InventoryManagerTest.java:166)
+       [...]
+     Caused by: java.lang.NullPointerException: Cannot invoke "com.inventory.Item.getQuantity()" because "<local3>" is null
+       com.inventory.InventoryManager.adjustQuantity(InventoryManager.java:26)
+       com.inventory.InventoryManagerTest$Update.lambda$adjustQuantity_unknownId_throws$6(InventoryManagerTest.java:166)
+       org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:53)
+       [...]
+  JUnit Jupiter:InventoryManager:Update (updateItem / adjustQuantity):updateItem on unknown ID throws ItemNotFoundException
+    MethodSource [className = 'com.inventory.InventoryManagerTest$Update', methodName = 'updateItem_unknownId_throwsNotFound', methodParameterTypes = '']
+    => org.opentest4j.AssertionFailedError: Unexpected exception type thrown, expected: <com.inventory.ItemNotFoundException> but was: <java.lang.NullPointerException>
+       org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
+       org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:67)
+       org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:35)
+       org.junit.jupiter.api.Assertions.assertThrows(Assertions.java:3115)
+       com.inventory.InventoryManagerTest$Update.updateItem_unknownId_throwsNotFound(InventoryManagerTest.java:134)
+       [...]
+     Caused by: java.lang.NullPointerException: Cannot invoke "com.inventory.Item.setName(String)" because "<local6>" is null
+       com.inventory.InventoryManager.updateItem(InventoryManager.java:19)
+       com.inventory.InventoryManagerTest$Update.lambda$updateItem_unknownId_throwsNotFound$3(InventoryManagerTest.java:135)
+       org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:53)
+       [...]
+  JUnit Jupiter:InventoryManager:Update (updateItem / adjustQuantity):updateItem with invalid data leaves the item unchanged
+    MethodSource [className = 'com.inventory.InventoryManagerTest$Update', methodName = 'updateItem_invalidData_leavesItemUnchanged', methodParameterTypes = '']
+    => org.opentest4j.AssertionFailedError: Expected java.lang.IllegalArgumentException to be thrown, but nothing was thrown.
+       org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:152)
+       org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:73)
+       org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:35)
+       org.junit.jupiter.api.Assertions.assertThrows(Assertions.java:3115)
+       com.inventory.InventoryManagerTest$Update.updateItem_invalidData_leavesItemUnchanged(InventoryManagerTest.java:141)
+       java.base/java.lang.reflect.Method.invoke(Method.java:580)
+       java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+       java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+       java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+  JUnit Jupiter:InventoryManager:Read (getItem / getAllItems):unknown ID throws ItemNotFoundException
+    MethodSource [className = 'com.inventory.InventoryManagerTest$Read', methodName = 'getItem_unknown_throws', methodParameterTypes = '']
+    => org.opentest4j.AssertionFailedError: Expected com.inventory.ItemNotFoundException to be thrown, but nothing was thrown.
+       org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:152)
+       org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:73)
+       org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:35)
+       org.junit.jupiter.api.Assertions.assertThrows(Assertions.java:3115)
+       com.inventory.InventoryManagerTest$Read.getItem_unknown_throws(InventoryManagerTest.java:86)
+       java.base/java.lang.reflect.Method.invoke(Method.java:580)
+       java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+       java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+       java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+  JUnit Jupiter:InventoryManager:Read (getItem / getAllItems):getItem_blankOrNullId_throws(String):invalid id [null] throws IllegalArgumentException
+    MethodSource [className = 'com.inventory.InventoryManagerTest$Read', methodName = 'getItem_blankOrNullId_throws', methodParameterTypes = 'java.lang.String']
+    => org.opentest4j.AssertionFailedError: Expected java.lang.IllegalArgumentException to be thrown, but nothing was thrown.
+       org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:152)
+       org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:73)
+       org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:35)
+       org.junit.jupiter.api.Assertions.assertThrows(Assertions.java:3115)
+       com.inventory.InventoryManagerTest$Read.getItem_blankOrNullId_throws(InventoryManagerTest.java:93)
+       java.base/java.lang.reflect.Method.invoke(Method.java:580)
+       java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.accept(ForEachOps.java:184)
+       java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
+       java.base/java.util.stream.ReferencePipeline$2$1.accept(ReferencePipeline.java:179)
+       java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
+       [...]
+  JUnit Jupiter:InventoryManager:Read (getItem / getAllItems):getItem_blankOrNullId_throws(String):invalid id [] throws IllegalArgumentException
+    MethodSource [className = 'com.inventory.InventoryManagerTest$Read', methodName = 'getItem_blankOrNullId_throws', methodParameterTypes = 'java.lang.String']
+    => org.opentest4j.AssertionFailedError: Expected java.lang.IllegalArgumentException to be thrown, but nothing was thrown.
+       org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:152)
+       org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:73)
+       org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:35)
+       org.junit.jupiter.api.Assertions.assertThrows(Assertions.java:3115)
+       com.inventory.InventoryManagerTest$Read.getItem_blankOrNullId_throws(InventoryManagerTest.java:93)
+       java.base/java.lang.reflect.Method.invoke(Method.java:580)
+       java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.accept(ForEachOps.java:184)
+       java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
+       java.base/java.util.stream.ReferencePipeline$2$1.accept(ReferencePipeline.java:179)
+       java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
+       [...]
+  JUnit Jupiter:InventoryManager:Read (getItem / getAllItems):getItem_blankOrNullId_throws(String):invalid id [  ] throws IllegalArgumentException
+    MethodSource [className = 'com.inventory.InventoryManagerTest$Read', methodName = 'getItem_blankOrNullId_throws', methodParameterTypes = 'java.lang.String']
+    => org.opentest4j.AssertionFailedError: Expected java.lang.IllegalArgumentException to be thrown, but nothing was thrown.
+       org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:152)
+       org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:73)
+       org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:35)
+       org.junit.jupiter.api.Assertions.assertThrows(Assertions.java:3115)
+       com.inventory.InventoryManagerTest$Read.getItem_blankOrNullId_throws(InventoryManagerTest.java:93)
+       java.base/java.lang.reflect.Method.invoke(Method.java:580)
+       java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.accept(ForEachOps.java:184)
+       java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
+       java.base/java.util.stream.ReferencePipeline$2$1.accept(ReferencePipeline.java:179)
+       java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
+       [...]
+  JUnit Jupiter:InventoryManager:Create (addItem):duplicate ID is rejected and original is preserved
+    MethodSource [className = 'com.inventory.InventoryManagerTest$Create', methodName = 'addItem_duplicateId_throwsAndKeepsOriginal', methodParameterTypes = '']
+    => org.opentest4j.AssertionFailedError: Expected com.inventory.DuplicateItemException to be thrown, but nothing was thrown.
+       org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:152)
+       org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:73)
+       org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:35)
+       org.junit.jupiter.api.Assertions.assertThrows(Assertions.java:3115)
+       com.inventory.InventoryManagerTest$Create.addItem_duplicateId_throwsAndKeepsOriginal(InventoryManagerTest.java:58)
+       java.base/java.lang.reflect.Method.invoke(Method.java:580)
+       java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+       java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+       java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+
+Test run finished after 395 ms
+[        17 containers found      ]
+[         0 containers skipped    ]
+[        17 containers started    ]
+[         0 containers aborted    ]
+[        17 containers successful ]
+[         0 containers failed     ]
+[        53 tests found           ]
+[         0 tests skipped         ]
+[        53 tests started         ]
+[         0 tests aborted         ]
+[        32 tests successful      ]
+[        21 tests failed          ]
+

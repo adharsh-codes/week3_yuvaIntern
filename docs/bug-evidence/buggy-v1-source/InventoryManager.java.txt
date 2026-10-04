@@ -1,0 +1,64 @@
+package com.inventory;
+
+import java.util.*;
+
+public class InventoryManager {
+    private final Map<String, Item> items = new LinkedHashMap<>();
+
+    public void addItem(Item item) {
+        if (item == null) throw new IllegalArgumentException("Item must not be null");
+        items.put(item.getId(), item);                 // BUG 1: silently overwrites duplicates
+    }
+
+    public Item getItem(String id) {
+        return items.get(id);                          // BUG 2: returns null instead of throwing
+    }
+
+    public void updateItem(String id, String name, int quantity, double price) {
+        Item item = getItem(id);
+        item.setName(name);                            // NPE when id is unknown (consequence of BUG 2)
+        item.setQuantity(quantity);
+        item.setPrice(price);
+    }
+
+    public void adjustQuantity(String id, int delta) {
+        Item item = getItem(id);
+        item.setQuantity(item.getQuantity() + delta);  // BUG 4: can go negative
+    }
+
+    public void removeItem(String id) {
+        items.remove(id);                              // BUG 3: silent no-op for unknown id
+    }
+
+    public List<Item> getAllItems() {
+        return new ArrayList<>(items.values());
+    }
+
+    public List<Item> searchByName(String term) {
+        List<Item> result = new ArrayList<>();
+        if (term == null || term.isBlank()) return result;
+        for (Item i : items.values()) {
+            if (i.getName().contains(term.trim())) result.add(i);   // BUG 5: case-sensitive
+        }
+        return result;
+    }
+
+    public List<Item> getLowStockItems(int threshold) {
+        if (threshold < 0) throw new IllegalArgumentException("Threshold must not be negative");
+        List<Item> result = new ArrayList<>();
+        for (Item i : items.values()) {
+            if (i.getQuantity() <= threshold) result.add(i);        // BUG 6: off-by-one (<= instead of <)
+        }
+        return result;
+    }
+
+    public double getTotalValue() {
+        double total = 0;
+        for (Item i : items.values()) {
+            total += (int) i.getPrice() * i.getQuantity();          // BUG 8: truncates cents
+        }
+        return total;
+    }
+
+    public int size() { return items.size(); }
+}
